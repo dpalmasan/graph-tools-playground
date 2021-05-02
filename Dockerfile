@@ -16,9 +16,8 @@ WORKDIR /app
 COPY poetry.lock pyproject.toml /app/
 
 # Project initialization:
-RUN poetry config virtualenvs.create false \
-  && poetry install --no-dev --no-interaction --no-ansi
+RUN poetry install --no-dev --no-interaction --no-ansi
 
 # Creating folders, and files for a project:
 COPY . /app
-CMD ["python", "/app/app.py"]
+CMD ["poetry", "run", "python", "/app/app.py"]

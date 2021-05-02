@@ -35,7 +35,7 @@ The graph rendering will not be performant if the graph increases to million or 
 
 * Get the code, your call here (`clone`, `fork` or `download`).
 * First you need to build the image: `docker build -t graph-challenge .`
-* Run `docker run -dp 5000:5000 graph-challenge`
+* Run `docker run -p 5000:5000 graph-challenge`
 * Go to http://localhost:5000/
 
 #### Locally
