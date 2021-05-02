@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Running app &#8212; Graph Playground 0.1.1 documentation</title>
+    <title>Graph Playground &#8212; Graph Playground 0.1.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -31,10 +31,35 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="running-app">
-<h1>Running app<a class="headerlink" href="#running-app" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="graph-playground">
+<h1>Graph Playground<a class="headerlink" href="#graph-playground" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Playing a little bit with graphs and visualization. For more info about the API and how they work, pleae check the <a class="reference external" href="https://dpalmasan.github.io/graph-tools-playground">documentation</a>.</p>
+<div class="section" id="approach">
+<h3>Approach<a class="headerlink" href="#approach" title="Permalink to this headline">¶</a></h3>
+<p>Current approach is naive, basically we consume data from files, and add to the graph in a batch approach. The files we consume contain information about Entities (each vertex in the graph) and relationships (edges in the graph). If more information is needed to be added to the graph, that is also possible, loading more files into the graph. You can check <code class="docutils literal notranslate"><span class="pre">tests/test_graph</span></code> to check how the approach work with mock data.</p>
+<p>As any python object, if the graph need to be persistent, it can be serialized into a <a class="reference external" href="https://docs.python.org/3/library/pickle.html">pickle</a> object. Moreover, as the graph is a subclass of a graph from the <a class="reference external" href="https://networkx.org/">networkx</a> library, it can be <a class="reference external" href="https://networkx.org/documentation/stable/reference/readwrite/index.html">serialized</a> in several fashions.</p>
+<p>As it might be seen, the approach is naive but simple; It assumes that the data will fit in memory. There are multiple approaches to serialize a graph, one could be storing the property tables and the relationship tables in a relational database. However, the semantics and analysis will be complex as this structure is not particularly friendly with graph data, we would require multiple queries that might be difficult to maintain. We could also use out-of-the box solutions such as <a class="reference external" href="https://neo4j.com/">neo4j</a>.</p>
+<p>Nevertheless, if we’d like to scale up graph analysis, even using out-of-the-box solutions might not be appropiate. In some cases, we would need to scale to billion of nodes, and thus, require distributed processing. In that case, the solution turns out to be more complex as we would require a distributed approach to process the graph. In such cases, we could use already made solutions, for example using a Bulk Synchronous Parallel model to process the graph. Some frameworks already exists, such as <a class="reference external" href="https://giraph.apache.org/">Apache Giraph</a>.</p>
+</div>
+<div class="section" id="running-app">
+<h3>Running app<a class="headerlink" href="#running-app" title="Permalink to this headline">¶</a></h3>
+<p>The app consists in loading data from <code class="docutils literal notranslate"><span class="pre">data</span></code> folder, and creates a small visualization that can be viewed in a browser. It also performs an analysis, looking for cliques of length 3 or more, to get interesting insights about the data, for example, who has big networks; meaning that they can influence people or events surrounding multiple entities in the network. The approach to get the cliques is also a naive one, as all the cliques are  searched. This is exponential with the number of vertices in the graph, so please, follow the cautions stated in the docs. For more details check <a class="reference external" href="https://dpalmasan.github.io/graph-tools-playground/api_reference/graph.html#graph_tools_playground.graph.ChallengeGraph.find_person_cliques">find_person_cliques</a> docs, as an example.</p>
+<p>Given the complexity of the approach, it is likely it will not scale to big graphs. Here, different approaches might be tried, depending on the graph size:</p>
+<ul class="simple">
+<li><p>Use approximate heuristics (e.g. graph-coloring based ones). This will lead to incomplete results, but at least we will have results.</p></li>
+<li><p>Limit the size of cliques to look up. For instance we can just search for k-cliques (heuristically)</p></li>
+<li><p>Even using heuristics, some analysis might take too long to process a big amount of data and we might miss deadlines (assuming there are deadlines for the analysis). In such cases, we could try using a distributed approach, for instance using a Bulk Synchronous Parallel model.</p></li>
+</ul>
+<p>The graph rendering will not be performant if the graph increases to million or more nodes. Moreover, visual inspection would not even be useful. In such cases we could take the following approaches:</p>
+<ul class="simple">
+<li><p>Not rendering the full graph, but rendering small patches (this can be done using distributed processing)</p></li>
+<li><p>Dimentional reduction techniques (E.g factorizing the adjacency matrix, using more sophisticated approach such as graph2vec)</p></li>
+<li><p>Limiting the relationships and the entity types to specific types (however there is the tradeoff of missing some novel connection relationships)</p></li>
+</ul>
 <div class="section" id="using-docker">
-<h2>Using Docker<a class="headerlink" href="#using-docker" title="Permalink to this headline">¶</a></h2>
+<h4>Using Docker<a class="headerlink" href="#using-docker" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Get the code, your call here (<code class="docutils literal notranslate"><span class="pre">clone</span></code>, <code class="docutils literal notranslate"><span class="pre">fork</span></code> or <code class="docutils literal notranslate"><span class="pre">download</span></code>).</p></li>
 <li><p>First you need to build the image: <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span> <span class="pre">-t</span> <span class="pre">graph-challenge</span> <span class="pre">.</span></code></p></li>
@@ -43,7 +68,7 @@
 </ul>
 </div>
 <div class="section" id="locally">
-<h2>Locally<a class="headerlink" href="#locally" title="Permalink to this headline">¶</a></h2>
+<h4>Locally<a class="headerlink" href="#locally" title="Permalink to this headline">¶</a></h4>
 <p>I am using <code class="docutils literal notranslate"><span class="pre">poetry</span></code> to manage dependencies, this will require installing <a class="reference external" href="https://python-poetry.org/">poetry</a>. The recommended way to do it, per the docs on Unix based environment is:</p>
 <p><code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-sSL</span> <span class="pre">https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py</span> <span class="pre">|</span> <span class="pre">python</span> <span class="pre">-</span></code></p>
 <p>Therefore, following these steps should suffice:</p>
@@ -61,6 +86,8 @@
 </ul>
 </li>
 </ul>
+</div>
+</div>
 </div>
 </div>
 </div>
