@@ -4,7 +4,7 @@
 
 Playing a little bit with graphs and visualization. For more info about the API and how they work, pleae check the [documentation](https://dpalmasan.github.io/graph-tools-playground).
 
-### Approach
+## Approach
 
 Current approach is naive, basically we consume data from files, and add to the graph in a batch approach. The files we consume contain information about Entities (each vertex in the graph) and relationships (edges in the graph). If more information is needed to be added to the graph, that is also possible, loading more files into the graph. You can check `tests/test_graph` to check how the approach work with mock data. 
 
@@ -49,3 +49,11 @@ Therefore, following these steps should suffice:
 * Run `poetry install`
 * Check app builds correctly, running unit tests: `poetry run pytest tests/`
 * To run the app `poetry run python app.py`, and then go to http://localhost:5000/
+
+## Thoughts and Nice to Haves
+
+Performance testing would be nice to empirically get an operation characteristic for the scalability of the solution. The most expensive operation is enumerating the cliques, which is based on a modification of [Genome-scale computational approaches to memory-intensive applications in systems biology](https://laur.lau.edu.lb:8443/xmlui/handle/10725/5407). Nevertheless, the performance testing result of the paper gives us an insight on how will perform our solution, and up to which size of the network it might scale. The way to add performance testing could be generating a graph (or using existing graphs) and get an estimate of performance as a function of `N`, where `N` is the number of nodes. We already know beforehand that our current approach will be exponential in time, but we can get an estimate of how big can be `N` for the solution to be useful. Moreover, having this benchmark allows us to optimize the cliques functions (e.g. using heuristics or approximations), and we can get a ratio of improvement in time.
+
+Regarding build and deploy, would be nice testing the library in isoltation. This can be achieved using [Tox](https://tox.readthedocs.io/en/latest/).
+
+Finally, as a self-feedback, the most difficult part for me to implement was the interactive visualization, as I was not familiar with frameworks that could ease the development for graph drawings. The approach for me to implement this, was looking through documentation and checking if any of the libraries I know, had support for graph visualization (in my case, `plotly` did the trick!).
