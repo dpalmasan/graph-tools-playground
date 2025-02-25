@@ -8,6 +8,9 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_DEFAULT_TIMEOUT=100 \
   POETRY_VERSION=1.1.6
 
+RUN apt update
+RUN yes | apt install build-essential
+
 # System deps:
 RUN pip install "poetry==$POETRY_VERSION"
 
